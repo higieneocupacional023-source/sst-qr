@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema SST - Segurança do Trabalho</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <i class="fas fa-hard-hat"></i>
+                <span>SST System</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li data-tab="employees">
+                    <i class="fas fa-users"></i>
+                    <span>Colaboradores</span>
+                </li>
+                <li data-tab="inspections">
+                    <i class="fas fa-clipboard-check"></i>
+                    <span>Inspeções</span>
+                </li>
+                <li data-tab="checklist">
+                    <i class="fas fa-list-check"></i>
+                    <span>Checklist NR</span>
+                </li>
+                <li data-tab="reports">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Relatórios</span>
+                </li>
+                <li data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <!-- Dashboard -->
+            <section id="dashboard" class="tab-content active">
+                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalEmployees">0</h3>
+                            <p>Colaboradores</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalInspections">0</h3>
+                            <p>Inspeções</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="totalNonConformities">0</h3>
+                            <p>Não Conformidades</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                        <div class="stat-info">
+                            <h3 id="complianceRate">0%</h3>
+                            <p>Taxa de Conformidade</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-calendar"></i> Próximas Inspeções</h3>
+                        <div id="upcomingInspections" class="list-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="dashboard-card">
+                        <h3><i class="fas fa-clock"></i> Atividade Recente</h3>
+                        <div id="recentActivity" class="list-container">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Employees -->
+            <section id="employees" class="tab-content">
+                <h1><i class="fas fa-users"></i> Colaboradores</h1>
+                <div class="toolbar">
+                    <button id="addEmployeeBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Novo Colaborador
+                    </button>
+                    <div class="search-box">
+                        <input type="text" id="employeeSearch" placeholder="Buscar colaborador...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="employeeTable">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Cargo</th>
+                                <th>Setor</th>
+                                <th>Admissão</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employeeTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Inspections -->
+            <section id="inspections" class="tab-content">
+                <h1><i class="fas fa-clipboard-check"></i> Inspeções</h1>
+                <div class="toolbar">
+                    <button id="addInspectionBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nova Inspeção
+                    </button>
+                    <div class="search-box">
+                        <input type="text" id="inspectionSearch" placeholder="Buscar inspeção...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="inspectionTable">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Local</th>
+                                <th>Responsável</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspectionTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Checklist -->
+            <section id="checklist" class="tab-content">
+                <h1><i class="fas fa-list-check"></i> Checklist NR</h1>
+                <div class="toolbar">
+                    <select id="nrSelect">
+                        <option value="">Selecione a NR</option>
+                        <option value="NR-01">NR-01 - Disposições Gerais</option>
+                        <option value="NR-04">NR-04 - Serviços Especializados</option>
+                        <option value="NR-05">NR-05 - CIPA</option>
+                        <option value="NR-06">NR-06 - EPI</option>
+                        <option value="NR-09">NR-09 - Avaliação e Controle</option>
+                        <option value="NR-10">NR-10 - Segurança em Instalações Elétricas</option>
+                        <option value="NR-12">NR-12 - Segurança no Trabalho em Máquinas</option>
+                        <option value="NR-17">NR-17 - Ergonomia</option>
+                        <option value="NR-18">NR-18 - Condições e Ambiente</option>
+                        <option value="NR-23">NR-23 - Proteção contra Incêndios</option>
+                        <option value="NR-24">NR-24 - Condições Sanitárias</option>
+                        <option value="NR-33">NR-33 - Trabalho em Espaços Confinados</option>
+                        <option value="NR-35">NR-35 - Trabalho em Altura</option>
+                    </select>
+                    <button id="startChecklistBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar Checklist
+                    </button>
+                </div>
+                <div id="checklistContainer" class="checklist-container">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Reports -->
+            <section id="reports" class="tab-content">
+                <h1><i class="fas fa-file-pdf"></i> Relatórios</h1>
+                <div class="reports-grid">
+                    <div class="report-card">
+                        <i class="fas fa-file-pdf"></i>
+                        <h3>Relatório de Colaboradores</h3>
+                        <p>Lista completa de colaboradores cadastrados</p>
+                        <button class="btn btn-secondary" onclick="generateEmployeeReport()">
+                            <i class="fas fa-download"></i> Gerar PDF
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-file-excel"></i>
+                        <h3>Planilha de Colaboradores</h3>
+                        <p>Exportar dados para Excel</p>
+                        <button class="btn btn-secondary" onclick="exportEmployeesToExcel()">
+                            <i class="fas fa-download"></i> Gerar Excel
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-clipboard-check"></i>
+                        <h3>Relatório de Inspeções</h3>
+                        <p>Histórico de inspeções realizadas</p>
+                        <button class="btn btn-secondary" onclick="generateInspectionReport()">
+                            <i class="fas fa-download"></i> Gerar PDF
+                        </button>
+                    </div>
+                    <div class="report-card">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Estatísticas Gerais</h3>
+                        <p>Indicadores de segurança do trabalho</p>
+                        <button class="btn btn-secondary" onclick="generateStatsReport()">
+                            <i class="fas fa-download"></i> Gerar PDF
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings -->
+            <section id="settings" class="tab-content">
+                <h1><i class="fas fa-cog"></i> Configurações</h1>
+                <div class="settings-container">
+                    <div class="setting-group">
+                        <h3>Empresa</h3>
+                        <div class="form-group">
+                            <label for="companyName">Nome da Empresa</label>
+                            <input type="text" id="companyName" placeholder="Nome da empresa">
+                        </div>
+                        <div class="form-group">
+                            <label for="companyCNPJ">CNPJ</label>
+                            <input type="text" id="companyCNPJ" placeholder="00.000.000/0000-00">
+                        </div>
+                        <div class="form-group">
+                            <label for="companyAddress">Endereço</label>
+                            <input type="text" id="companyAddress" placeholder="Endereço completo">
+                        </div>
+                    </div>
+                    <div class="setting-group">
+                        <h3>Dados</h3>
+                        <button class="btn btn-secondary" onclick="backupData()">
+                            <i class="fas fa-download"></i> Backup dos Dados
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('restoreFile').click()">
+                            <i class="fas fa-upload"></i> Restaurar Dados
+                        </button>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;" onchange="restoreData(event)">
+                        <button class="btn btn-danger" onclick="clearAllData()">
+                            <i class="fas fa-trash"></i> Limpar Todos os Dados
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Employee Modal -->
+    <div id="employeeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="employeeModalTitle">Novo Colaborador</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="employeeForm">
+                <input type="hidden" id="employeeId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empName">Nome Completo *</label>
+                        <input type="text" id="empName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empCPF">CPF *</label>
+                        <input type="text" id="empCPF" placeholder="000.000.000-00" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empPosition">Cargo *</label>
+                        <input type="text" id="empPosition" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empSector">Setor *</label>
+                        <input type="text" id="empSector" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empAdmission">Data de Admissão *</label>
+                        <input type="date" id="empAdmission" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="empPhone">Telefone</label>
+                        <input type="tel" id="empPhone" placeholder="(00) 00000-0000">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="empEmail">E-mail</label>
+                        <input type="email" id="empEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="empBirthday">Data de Nascimento</label>
+                        <input type="date" id="empBirthday">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="empPPE">EPIs Necessários</label>
+                    <textarea id="empPPE" rows="2" placeholder="Capacete, óculos, luvas, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="empNotes">Observações</label>
+                    <textarea id="empNotes" rows="2"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary cancel-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inspection Modal -->
+    <div id="inspectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="inspectionModalTitle">Nova Inspeção</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="inspectionForm">
+                <input type="hidden" id="inspectionId">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="inspDate">Data da Inspeção *</label>
+                        <input type="date" id="inspDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inspTime">Horário</label>
+                        <input type="time" id="inspTime">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="inspLocation">Local/Área *</label>
+                        <input type="text" id="inspLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="inspResponsible">Responsável *</label>
+                        <select id="inspResponsible" required>
+                            <!-- Populated by JS -->
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inspType">Tipo de Inspeção *</label>
+                    <select id="inspType" required>
+                        <option value="">Selecione</option>
+                        <option value="Rotina">Rotina</option>
+                        <option value="Periódica">Periódica</option>
+                        <option value="Eventual">Eventual</option>
+                        <option value="Auditoria">Auditoria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="inspDescription">Descrição/Observações</label>
+                    <textarea id="inspDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="inspStatus">Status *</label>
+                    <select id="inspStatus" required>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Em Andamento">Em Andamento</option>
+                        <option value="Concluída">Concluída</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary cancel-btn">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Employee Details Modal -->
+    <div id="employeeDetailsModal" class="modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h2>Detalhes do Colaborador</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="employee-details">
+                    <div class="employee-header">
+                        <div class="employee-avatar" id="employeeAvatar">JS</div>
+                        <div class="employee-basic-info">
+                            <h3 id="detailName">João Silva</h3>
+                            <p id="detailPosition">Operador | Setor: Produção</p>
+                        </div>
+                    </div>
+                    <div class="details-grid">
+                        <div class="detail-item">
+                            <label>CPF:</label>
+                            <span id="detailCPF">000.000.000-00</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Data de Admissão:</label>
+                            <span id="detailAdmission">01/01/2020</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Telefone:</label>
+                            <span id="detailPhone">(00) 00000-0000</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>E-mail:</label>
+                            <span id="detailEmail">email@exemplo.com</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Data de Nascimento:</label>
+                            <span id="detailBirthday">01/01/1990</span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>EPIs:</label>
+                            <span id="detailPPE">Capacete, óculos, luvas</span>
+                        </div>
+                        <div class="detail-item full-width">
+                            <label>Observações:</label>
+                            <span id="detailNotes">-</span>
+                        </div>
+                    </div>
+                    <div class="qr-code-section">
+                        <h4>QR Code do Colaborador</h4>
+                        <div id="employeeQRCode"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="printEmployeeCard()">
+                    <i class="fas fa-print"></i> Imprimir Ficha
+                </button>
+                <button class="btn btn-primary" onclick="closeModal('employeeDetailsModal')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content modal-sm">
+            <div class="modal-header">
+                <h2>Confirmar</h2>
+                <span class="close">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Tem certeza que deseja excluir este item?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary cancel-btn">Cancelar</button>
+                <button id="confirmBtn" class="btn btn-danger">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+SISTEMA SST - SEGURANÇA DO TRABALHO
+====================================
+
+Instalação:
+-----------
+1. Certifique-se de que o Node.js está instalado (https://nodejs.org)
+2. Navegue até a pasta do sistema
+3. Execute "Iniciar Sistema.bat" ou digite "node server.js" no prompt
+
+Uso:
+----
+1. Acesse http://localhost:8080 no navegador
+2. Utilize o menu lateral para navegar entre as seções
+3. Cadastre colaboradores, inspeções e realize checklists
+
+Funcionalidades:
+----------------
+- Dashboard com estatísticas
+- Gerenciamento de colaboradores com QR Code
+- Inspeções de segurança
+- Checklists das Normas Regulamentadoras (NRs)
+- Geração de relatórios (PDF e Excel)
+- Backup e restauração de dados
+- Configurações da empresa
+
+NRs Suportadas:
+----------------
+NR-01, NR-04, NR-05, NR-06, NR-09, NR-10, NR-12, NR-17, NR-18, NR-23, NR-24, NR-33, NR-35
+
+Armazenamento:
+--------------
+Todos os dados são armazenados localmente no navegador (localStorage).
+Recomenda-se fazer backup regularmente através das Configurações.
+
+Suporte:
+--------
+Em caso de dúvidas ou problemas, verifique se o Node.js está instalado
+corretamente e se a porta 8080 não está sendo utilizada por outro programa.

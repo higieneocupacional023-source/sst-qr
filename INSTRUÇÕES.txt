@@ -1,0 +1,40 @@
+SISTEMA SST - SEGURANÇA DO TRABALHO
+====================================
+
+COMO USAR:
+----------
+1. Clique duas vezes no atalho "SST-System" na Área de Trabalho
+   OU
+2. Abra a pasta "SST-System" e clique em "Abrir Sistema.bat"
+
+O navegador abrirá automaticamente em http://localhost:8080
+
+FUNCIONALIDADES:
+----------------
+• Dashboard: Visão geral com estatísticas
+• Colaboradores: Cadastro completo com QR Code
+• Inspeções: Gerenciamento de inspeções de segurança
+• Checklist NR: Checklists de 13 Normas Regulamentadoras
+• Relatórios: Geração de PDF e Excel
+• Configurações: Dados da empresa e backup
+
+NRs SUPORTADAS:
+----------------
+NR-01, NR-04, NR-05, NR-06, NR-09, NR-10, NR-12, 
+NR-17, NR-18, NR-23, NR-24, NR-33, NR-35
+
+ARMAZENAMENTO:
+--------------
+Todos os dados ficam salvos no navegador (localStorage).
+Faça backup regularmente em Configurações > Backup dos Dados.
+
+REQUISITOS:
+-----------
+• Node.js instalado (https://nodejs.org)
+• Navegador web moderno (Chrome, Firefox, Edge)
+
+SOLUÇÃO DE PROBLEMAS:
+---------------------
+• Se a porta 8080 estiver ocupada, edite "server.js" e mude a porta
+• Se o Node.js não estiver instalado, baixe em https://nodejs.org
+• Para limpar todos os dados, vá em Configurações > Limpar Dados
